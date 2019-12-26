@@ -10,8 +10,8 @@ from functools import reduce
 #则第一次调用传递sequence的两个元素, 以后把前一次调用的结果和sequence的下一个元素传递给function. 
 #如果给出initial, 则第一次传递initial和sequence的第一个元素给function.
 #test_git
-import lees as b
 from PIL import Image
+#PIL是图像处理库 详情请见练习
 import numpy as np
 from matplotlib.colors import rgb_to_hsv, hsv_to_rgb
 
