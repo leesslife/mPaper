@@ -246,7 +246,7 @@ def yolo_boxes_and_scores(feats, anchors, num_classes, input_shape, image_shape)
     return boxes, box_scores                                             #返回排序好的坐标信息与维度信息
 
 
-def yolo_eval(yolo_outputs,                                              #具体计算评估预测值
+def yolo_eval(yolo_outputs,                                             
               anchors,
               num_classes,
               image_shape,
@@ -254,7 +254,7 @@ def yolo_eval(yolo_outputs,                                              #具体
               score_threshold=.6,
               iou_threshold=.5):
     """Evaluate YOLO model on given input and return filtered boxes."""
-    num_layers = len(yolo_outputs)
+    num_layers = len(yolo_outputs)                                                      #具体计算评估预测值
     anchor_mask = [[6,7,8], [3,4,5], [0,1,2]] if num_layers==3 else [[3,4,5], [1,2,3]] # default setting
     input_shape = K.shape(yolo_outputs[0])[1:3] * 32                                   # 最小一层13x32=416，回归图片输入大小
     boxes = []                                                                         # 定义boxes_list
