@@ -46,36 +46,52 @@ def _main():
     #patience 如果3个周期内 比例不在改变，降低学习率变为原来的0.1
     early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=1)
     #设定早停
-    val_split = 0.1
-    with open(annotation_path) as f:
-        lines = f.readlines()
-    np.random.seed(10101)
-    np.random.shuffle(lines)
-    np.random.seed(None)
-    num_val = int(len(lines)*val_split)
-    num_train = len(lines) - num_val
+    #EarlyStopping
+    #monitor 要监控的量
+    #min_delta: monitor的最小变化，如果绝对值小于min_delta，则视为没有改善
+    #patience: 没有改善的时期数，之后训练将被停止。
+    #verbose:  详细模式，与mode有关。
+    #mode: one of {auto, min, max}. 在最小模式下，当监控量停止下降时，培训将停止; 在最大模式下，当监控量停止增加时，它将停止; 在自动模式下，从监控数量的名称自动推断方向。
+    #baseline: 要监控的变量的基准值。 如果模型没有显示baseline的改善，训练将停止。
+    #restore_best_weights: 是否使用受监控数量的最佳值从时期恢复模型权重。 如果为假，则使用在训练的最后一步获得的模型权重
+    val_split = 0.1    #设定训练与测试值内容确定分割线
+    with open(annotation_path) as f:   #从文件读取文档行，每一行代表一个图的对象
+        lines = f.readlines()         
+    np.random.seed(10101)              #设定随机数种子
+    np.random.shuffle(lines)           #随机打乱行数
+    np.random.seed(None)               #重新确定随机数种子
+    num_val = int(len(lines)*val_split)  #测试图片数量
+
+    num_train = len(lines) - num_val  #训练图片数量
 
     # Train with frozen layers first, to get a stable loss.
     # Adjust num epochs to your dataset. This step is enough to obtain a not bad model.
     if True:
         # perform bottleneck training
-        if not os.path.isfile("bottlenecks.npz"):
+        if not os.path.isfile("bottlenecks.npz"):   #如果不存在bottlenecks.npz则进行以下操作
             print("calculating bottlenecks")
             batch_size=8
-            bottlenecks=bottleneck_model.predict_generator(data_generator_wrapper(lines, batch_size, input_shape, anchors, num_classes, random=False, verbose=True),
-             steps=(len(lines)//batch_size)+1, max_queue_size=1)
+            bottlenecks=bottleneck_model.predict_generator(data_generator_wrapper(lines, batch_size,input_shape, anchors, num_classes, random=False, verbose=True),steps=(len(lines)//batch_size)+1, max_queue_size=1)
+            #利用model的predict_generator 利用数据生成器生成预测数据
+            #steps确定预测的的步数 这里为(lines//batch_size)+1确保所有的对象预测一遍
+            #maxsize_queue_size确定等待队列的长度，1代表等待队列智能有一捆数据
             np.savez("bottlenecks.npz", bot0=bottlenecks[0], bot1=bottlenecks[1], bot2=bottlenecks[2])
-    
+            #保存预测数据值，根据模型预测生成器，以可迭代的方式获取通过data_generator_wrapper 得到的数据，并生成预测，并最终保存预测，这里需要记住的是bottleneck_model之前已经登录过已经训练过的权重数据
+
         # load bottleneck features from file
         dict_bot=np.load("bottlenecks.npz")
+        #登录已经存在的预测结果 数据不论是否是训练数据还是非训练数据，都只预测了1遍
         bottlenecks_train=[dict_bot["bot0"][:num_train], dict_bot["bot1"][:num_train], dict_bot["bot2"][:num_train]]
+        #训练数据预测的结果 生成预测的结果 
         bottlenecks_val=[dict_bot["bot0"][num_train:], dict_bot["bot1"][num_train:], dict_bot["bot2"][num_train:]]
-
+        #测试数据预测的结果，生成预测的结果
         # train last layers with fixed bottleneck features
         batch_size=8
         print("Training last layers with bottleneck features")
         print('with {} samples, val on {} samples and batch size {}.'.format(num_train, num_val, batch_size))
         last_layer_model.compile(optimizer='adam', loss={'yolo_loss': lambda y_true, y_pred: y_pred})
+        #在last_layer_model.compile中 yolo_loss 被融合到了模型中，通常自定义loss函数默认的加载y_true,y_pred，作为参数计算损失，但现在最终损失函数的值是y_pred,
+        #这里损失函数yolo_loss 直接变成了function(y_true,y_pred):return y_pred了
         last_layer_model.fit_generator(bottleneck_generator(lines[:num_train], batch_size, input_shape, anchors, num_classes, bottlenecks_train),
                 steps_per_epoch=max(1, num_train//batch_size),
                 validation_data=bottleneck_generator(lines[num_train:], batch_size, input_shape, anchors, num_classes, bottlenecks_val),
@@ -240,13 +256,26 @@ def data_generator_wrapper(annotation_lines, batch_size, input_shape, anchors, n
     return data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes, random, verbose)  #利用数据生成器来生产所需要的数据
 
 def bottleneck_generator(annotation_lines, batch_size, input_shape, anchors, num_classes, bottlenecks):
+    #bottlenecks==bottlenecks_train=[dict_bot["bot0"][:num_train], dict_bot["bot1"][:num_train], dict_bot["bot2"][:num_train]]
+    #bottlenecks[0]==bottlenecks_train[0]=dict_bot["bot0"][:num_train]
+    #bottlenecks[1]==bottlenecks_train[1]=dict_bot["bot1"][:num_train]
+    #bottlenecks[2]==bottlenecks_train[2]=dict_bot["bot2"][:num_train]
+    #bottlenecks[0].shape=[num_train,13,13,n]
+    #bottlenecks[1].shape=[num_train,26,26,n]
+    #bottlenecks[2].shape=[num_train,52,52,n]
+    #其中bottlenecks[0][i],bottlenecks[1][i],bottlenecks[2][i],代表着同一张图的三个预测结果(由于是冻结模型，所以应该是最终层的前一个层的预测结果)
+    #这个预测结果分别是13x13xn,26x26xn,52x52xn n反正不等于75 因为最终预测的前一层
     n = len(annotation_lines)
+    #这里的n代表着图片的总体数量
     i = 0
     while True:
         box_data = []
         b0=np.zeros((batch_size,bottlenecks[0].shape[1],bottlenecks[0].shape[2],bottlenecks[0].shape[3]))
+        #根据batch_size 生成np容器[batch_size,13,13,n]
         b1=np.zeros((batch_size,bottlenecks[1].shape[1],bottlenecks[1].shape[2],bottlenecks[1].shape[3]))
+         #根据batch_size 生成np容器[batch_size,26,26,n]
         b2=np.zeros((batch_size,bottlenecks[2].shape[1],bottlenecks[2].shape[2],bottlenecks[2].shape[3]))
+         #根据batch_size 生成np容器[batch_size,52,52,n]
         for b in range(batch_size):
             _, box = get_random_data(annotation_lines[i], input_shape, random=False, proc_img=False)
             box_data.append(box)
