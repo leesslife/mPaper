@@ -278,7 +278,14 @@ def bottleneck_generator(annotation_lines, batch_size, input_shape, anchors, num
          #根据batch_size 生成np容器[batch_size,52,52,n]
         for b in range(batch_size):
             _, box = get_random_data(annotation_lines[i], input_shape, random=False, proc_img=False)
+            #一张图片对应一个annotation_lines[i]，根据图片和需求重置图片，最终将其嵌入到416，416的input画布中
+            #random=False 则不进行随机化
+            #random=True 则进行随机化
+            #box是根据图片大小位置转化后的每个对象x1,x2,y1,y2的转化值
             box_data.append(box)
+            #此处的box(n,2)
+            #这里的n代表一张图片中的对象数量
+            #这里运行后产生(batch_size,n,2)
             b0[b]=bottlenecks[0][i]
             b1[b]=bottlenecks[1][i]
             b2[b]=bottlenecks[2][i]

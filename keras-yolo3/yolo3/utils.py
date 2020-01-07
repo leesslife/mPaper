@@ -95,7 +95,7 @@ def get_random_data(annotation_line, input_shape, random=True, max_boxes=20, jit
     image = image.resize((nw,nh), Image.BICUBIC)                   #图片大小改变，图片w/h比有可能改变，图片一条边变大
 
     # place image
-    dx = int(rand(0, w-nw))                                        #如果图片变大，有可能为负
+    dx = int(rand(0, w-nw))                                        #如果图片变大，有可能为负定位，超出画布部分去除
     dy = int(rand(0, h-nh))
     new_image = Image.new('RGB', (w,h), (128,128,128))
     new_image.paste(image, (dx, dy))
@@ -106,10 +106,11 @@ def get_random_data(annotation_line, input_shape, random=True, max_boxes=20, jit
     if flip: image = image.transpose(Image.FLIP_LEFT_RIGHT)
 
     # distort image
-    hue = rand(-hue, hue)                                       #如片HSV 中的色调
-    sat = rand(1, sat) if rand()<.5 else 1/rand(1, sat)         #饱和度s
-    val = rand(1, val) if rand()<.5 else 1/rand(1, val)         #明度V
-    x = rgb_to_hsv(np.array(image)/255.)                        #把图片重rgb转化成HSV模型，但转化成255之间的归一化
+    hue = rand(-hue, hue)                                       #如片HSV 中的色调(变更随机数)
+    sat = rand(1, sat) if rand()<.5 else 1/rand(1, sat)         #饱和度s(变更随机数)
+    val = rand(1, val) if rand()<.5 else 1/rand(1, val)         #明度V(变更随机数)
+
+    x = rgb_to_hsv(np.array(image)/255.)                        #把图片从rgb转化成HSV模型，但转化之前进行255的归一化
     x[..., 0] += hue                                            #色调增加
     x[..., 0][x[..., 0]>1] -= 1                                 #把x[...,0]大于1的数-1
     x[..., 0][x[..., 0]<0] += 1                                 #把x[...,0]小于0的数+1
@@ -117,7 +118,7 @@ def get_random_data(annotation_line, input_shape, random=True, max_boxes=20, jit
     x[..., 2] *= val                                            #明度改变
     x[x>1] = 1                                                  #大于1的数等于1
     x[x<0] = 0                                                  #小于0的数等于0
-    image_data = hsv_to_rgb(x) # numpy array, 0 to 1            #转换会rgb格式
+    image_data = hsv_to_rgb(x) # numpy array, 0 to 1            #转换回rgb格式
     #对图像数据进行变更
 
     # correct boxes
