@@ -38,8 +38,8 @@ def letterbox_image(image, size):
     scale = min(w/iw, h/ih)             #尺度比值，取小的值，以iw，ih中大的为主
     nw = int(iw*scale)
     nh = int(ih*scale)
-
-    image = image.resize((nw,nh), Image.BICUBIC)      #改变图片的大小，BICUBIC时一种差值算法具体
+    #同时缩放，图像大边被缩放至所需大小，小边则按同比例缩放
+    image = image.resize((nw,nh), Image.BICUBIC)      #改变图片的大小，BICUBIC是一种差值算法具体
     new_image = Image.new('RGB', size, (128,128,128))
     new_image.paste(image, ((w-nw)//2, (h-nh)//2))    #居中图像在画布中间
     return new_image
@@ -135,7 +135,8 @@ def get_random_data(annotation_line, input_shape, random=True, max_boxes=20, jit
         box_w = box[:, 2] - box[:, 0]                           #计算处理后box_w
         box_h = box[:, 3] - box[:, 1]                           #计算处理后的box_h
         box = box[np.logical_and(box_w>1, box_h>1)] # discard invalid box  
-        #以上执行逻辑与，如果box_w与box_h都大于1则返回1 box对应的对象box有效，否则无效
+        #以上执行逻辑与，如果box_w与box_h都大于1则返回1 box对应的对象box有效(即是有对象存在)，否则无效(既是没有对象存在)
+        #对象有效则对应的box的x1，x2，y1，y2不变，对象无效则表示归0
         if len(box)>max_boxes: box = box[:max_boxes]            #排除大于20的box
         box_data[:len(box)] = box                               #box赋值给box[:len(box)]多余的还是为0
 

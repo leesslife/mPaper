@@ -91,19 +91,27 @@ def _main():
         print('with {} samples, val on {} samples and batch size {}.'.format(num_train, num_val, batch_size))
         last_layer_model.compile(optimizer='adam', loss={'yolo_loss': lambda y_true, y_pred: y_pred})
         #在last_layer_model.compile中 yolo_loss 被融合到了模型中，通常自定义loss函数默认的加载y_true,y_pred，作为参数计算损失，但现在最终损失函数的值是y_pred,
-        #这里损失函数yolo_loss 直接变成了function(y_true,y_pred):return y_pred了
+        #这里损失函数yolo_loss 直接变成了function(y_true,y_pred):return y_pred了 通过y_pred直接参与最终计算
         last_layer_model.fit_generator(bottleneck_generator(lines[:num_train], batch_size, input_shape, anchors, num_classes, bottlenecks_train),
+                #生成训练数据[[in0,in1,in2, *y_true], model_loss_last]
                 steps_per_epoch=max(1, num_train//batch_size),
                 validation_data=bottleneck_generator(lines[num_train:], batch_size, input_shape, anchors, num_classes, bottlenecks_val),
                 validation_steps=max(1, num_val//batch_size),
+                #生成验证数据[[in0,in1,in2, *y_true], model_loss_last]
                 epochs=30,
                 initial_epoch=0, max_queue_size=1)
+                #初始化周期为0
+                #最大队列为1
+        #keras使用fit fit_generator train_on_batch来实现训练
+        #在训练自己的数据时.fit_generator使用数据生成器来训练模型
+        #在训练数据完成后可以使用.predict_generator函数来使用数据生成器来预测
         model.save_weights(log_dir + 'trained_weights_stage_0.h5')
-        
+        #模型保存权重.h5文件，在冻结模型与训练完成后使用全部模型开始再训练。
         # train last layers with random augmented data
         model.compile(optimizer=Adam(lr=1e-3), loss={
             # use custom yolo_loss Lambda layer.
             'yolo_loss': lambda y_true, y_pred: y_pred})
+        #同上
         batch_size = 16
         print('Train on {} samples, val on {} samples, with batch size {}.'.format(num_train, num_val, batch_size))
         model.fit_generator(data_generator_wrapper(lines[:num_train], batch_size, input_shape, anchors, num_classes),
@@ -114,15 +122,19 @@ def _main():
                 initial_epoch=0,
                 callbacks=[logging, checkpoint])
         model.save_weights(log_dir + 'trained_weights_stage_1.h5')
+        #全部模型训练完后再次保存权重文件
 
     # Unfreeze and continue training, to fine-tune.
     # Train longer if the result is not good.
     if True:
         for i in range(len(model.layers)):
             model.layers[i].trainable = True
-        model.compile(optimizer=Adam(lr=1e-4), loss={'yolo_loss': lambda y_true, y_pred: y_pred}) # recompile to apply the change
+        #将model的所有层定义为True
+        model.compile(optimizer=Adam(lr=1e-4), loss={'yolo_loss': lambda y_true, y_pred: y_pred}) 
+        # recompile to apply the change
+        # 设置优化器，根据模型特点再次编译模型损失函数，model详情请见下方createmodel
         print('Unfreeze all of the layers.')
-
+        # 解冻所有模型层
         batch_size = 4 # note that more GPU memory is required after unfreezing the body
         print('Train on {} samples, val on {} samples, with batch size {}.'.format(num_train, num_val, batch_size))
         model.fit_generator(data_generator_wrapper(lines[:num_train], batch_size, input_shape, anchors, num_classes),
@@ -132,6 +144,7 @@ def _main():
             epochs=100,
             initial_epoch=50,
             callbacks=[logging, checkpoint, reduce_lr, early_stopping])
+        #前面的同上，后面的callbacks 用于日志输出，权重保存检查点，学习速率衰变方式，早停策略
         model.save_weights(log_dir + 'trained_weights_final.h5')
 
     # Further training if needed.
@@ -214,7 +227,7 @@ def create_model(input_shape, anchors, num_classes, load_pretrained=True, freeze
         arguments={'anchors': anchors, 'num_classes': num_classes, 'ignore_thresh': 0.5})(
         [*model_body.output, *y_true])
     model = Model([model_body.input, *y_true], model_loss)
-    #此处建立非瓶颈模型的最后一层
+    #此处建立建立冻结模型的整体
 
     return model, bottleneck_model, last_layer_model
 
@@ -264,7 +277,7 @@ def bottleneck_generator(annotation_lines, batch_size, input_shape, anchors, num
     #bottlenecks[1].shape=[num_train,26,26,n]
     #bottlenecks[2].shape=[num_train,52,52,n]
     #其中bottlenecks[0][i],bottlenecks[1][i],bottlenecks[2][i],代表着同一张图的三个预测结果(由于是冻结模型，所以应该是最终层的前一个层的预测结果)
-    #这个预测结果分别是13x13xn,26x26xn,52x52xn n反正不等于75 因为最终预测的前一层
+    #这个预测结果分别是13x13xn,26x26xn,52x52xn n反正不等于75 因为最终预测的前一层 (最终一层的n应该等于(20+4+1)x3==25)
     n = len(annotation_lines)
     #这里的n代表着图片的总体数量
     i = 0
@@ -281,18 +294,20 @@ def bottleneck_generator(annotation_lines, batch_size, input_shape, anchors, num
             #一张图片对应一个annotation_lines[i]，根据图片和需求重置图片，最终将其嵌入到416，416的input画布中
             #random=False 则不进行随机化
             #random=True 则进行随机化
-            #box是根据图片大小位置转化后的每个对象x1,x2,y1,y2的转化值
+            #box是根据图片大小位置转化后的每个对象true_x1,true_x2,true_y1,true_y2，C的转化值
             box_data.append(box)
-            #此处的box(n,2)
-            #这里的n代表一张图片中的对象数量
-            #这里运行后产生(batch_size,n,2)
+            #此处的box(20,5)，这里需要注意的是，这里的20不代表一定有20个对象，是指对象小于等于20，如果对象数量
+            #这里的20代表一张图片中的对象数量 20不代表对象的数量是20个，只代表对象数量最大是20，在这20里面不存在的对象为0
+            #这里运行后产生(batch_size,20,5)
             b0[b]=bottlenecks[0][i]
             b1[b]=bottlenecks[1][i]
             b2[b]=bottlenecks[2][i]
             i = (i+1) % n
-        box_data = np.array(box_data)
+        box_data = np.array(box_data) #将box_data 封装成np
         y_true = preprocess_true_boxes(box_data, input_shape, anchors, num_classes)
+        #根据box_data数据 生成合适的y_true 用于训练
         yield [b0, b1, b2, *y_true], np.zeros(batch_size)
+        #使用生成器 输出可迭代对象，[b0,b1,b2,*y_true],np.zeros(batch_size)
 
 if __name__ == '__main__':
     _main()

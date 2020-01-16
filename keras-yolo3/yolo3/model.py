@@ -166,23 +166,15 @@ def yolo_head(feats, anchors, num_classes, input_shape, calc_loss=False):
         # [[[0]],[[1]],[[2]],[[3]],[[4]],[[5]],[[6]],[[7]]]，
         # [[[0]],[[1]],[[2]],[[3]],[[4]],[[5]],[[6]],[[7]]]]
     grid = K.concatenate([grid_x, grid_y])
-        #在第一个维度上进行拼接
-        #[[[[0]],[[0]],[[0]],[[0]],[[0]],[[0]],[[0]],[[0]]],
-        #[[[1]],[[1]],[[1]],[[1]],[[1]],[[1]],[[1]],[[1]]],
-        #[[[2]],[[2]],[[2]],[[2]],[[2]],[[2]],[[2]],[[2]]],
-        #[[[3]],[[3]],[[3]],[[3]],[[3]],[[3]],[[3]],[[3]]],
-        #[[[4]],[[4]],[[4]],[[4]],[[4]],[[4]],[[4]],[[4]]],
-        #[[[5]],[[5]],[[5]],[[5]],[[5]],[[5]],[[5]],[[5]]],
-        #[[[6]],[[6]],[[6]],[[6]],[[6]],[[6]],[[6]],[[6]]],
-        #[[[7]],[[7]],[[7]],[[7]],[[7]],[[7]],[[7]],[[7]]],
-        # [[[0]],[[1]],[[2]],[[3]],[[4]],[[5]],[[6]],[[7]]]，
-        # [[[0]],[[1]],[[2]],[[3]],[[4]],[[5]],[[6]],[[7]]]，
-        # [[[0]],[[1]],[[2]],[[3]],[[4]],[[5]],[[6]],[[7]]]，
-        # [[[0]],[[1]],[[2]],[[3]],[[4]],[[5]],[[6]],[[7]]]，
-        # [[[0]],[[1]],[[2]],[[3]],[[4]],[[5]],[[6]],[[7]]]，
-        # [[[0]],[[1]],[[2]],[[3]],[[4]],[[5]],[[6]],[[7]]]，
-        # [[[0]],[[1]],[[2]],[[3]],[[4]],[[5]],[[6]],[[7]]]，
-        # [[[0]],[[1]],[[2]],[[3]],[[4]],[[5]],[[6]],[[7]]]]
+        #在最后一个维度上进行拼接 默认是最后维度
+        #[[[[0,0]],[[0,1]],[[0,2]],[[0,3]],[[0,4]],[[0,5]],[[0,6]],[[0,7]]],
+        # [[[1,0]],[[1,1]],[[1,2]],[[1,3]],[[1,4]],[[1,5]],[[1,6]],[[1,7]]],
+        # [[[2,0]],[[2,1]],[[2,2]],[[2,3]],[[2,4]],[[2,5]],[[2,6]],[[2,7]]],
+        # [[[3,0]],[[3,1]],[[3,2]],[[3,3]],[[3,4]],[[3,5]],[[3,6]],[[3,7]]],
+        # [[[4,0]],[[4,1]],[[4,2]],[[4,3]],[[4,4]],[[4,5]],[[4,6]],[[4,7]]],
+        # [[[5,0]],[[5,1]],[[5,2]],[[5,3]],[[5,4]],[[5,5]],[[5,6]],[[5,7]]],
+        # [[[6,0]],[[6,1]],[[6,2]],[[6,3]],[[6,4]],[[6,5]],[[6,6]],[[6,7]]],
+        # [[[7,0]],[[7,1]],[[7,2]],[[7,3]],[[7,4]],[[7,5]],[[7,6]],[[7,7]]]],
     grid = K.cast(grid, K.dtype(feats))
 
     feats = K.reshape(
@@ -190,9 +182,13 @@ def yolo_head(feats, anchors, num_classes, input_shape, calc_loss=False):
 
     # Adjust preditions to each spatial grid point and anchor size.
     box_xy = (K.sigmoid(feats[..., :2]) + grid) / K.cast(grid_shape[::-1], K.dtype(feats))               #实现损失函数中的XY计算
+    #feats特征层出来xy的数据首先进行sigmod计算，然后再加上grid,使其成为[1--grid_shape]范围内的数，然后再除以grid_shape, 使得它们再整幅图片尺度上归一化
     box_wh = K.exp(feats[..., 2:4]) * anchors_tensor / K.cast(input_shape[::-1], K.dtype(feats))         #实现损失函数中的wh计算 
+    #feats特征层出来wh的数据首先进行进行e的指数幂计算，然后与anchors_tensor对应anchor的w h进行相乘，最后再除以input_shape(416) 再整幅图片的基础上归一化
     box_confidence = K.sigmoid(feats[..., 4:5])                                                          #实现损失函数中的置信度计算
-    box_class_probs = K.sigmoid(feats[..., 5:])                                                          #实现损失中的类别信息计算
+    #feats特征成出来的置信度数据，通过sigmod函数归一化到1
+    box_class_probs = K.sigmoid(feats[..., 5:])
+    #同上类别数据归一化到一                                                          #实现损失中的类别信息计算
     #以上运算都经过了归一化操作(针对于整个图像)
 
     if calc_loss == True:                          
@@ -232,19 +228,18 @@ def yolo_boxes_and_scores(feats, anchors, num_classes, input_shape, image_shape)
     '''Process Conv layer output'''                                  
     box_xy, box_wh, box_confidence, box_class_probs = yolo_head(feats,                    
         anchors, num_classes, input_shape)
-    #用于预测(box_xy,box_wh,box_confidence,box_class_probs,都是五维的tensor,其中(-1,1,1,1,1))
+    #用于预测(box_xy,box_wh,box_confidence,box_class_probs,都是五维的tensor)
     #第一维度为batch 通常为1
     #第二维度为高度
     #第三维度为宽度
     #第四维度为num_anchor
     #第五维度为具体预测值
     #预测出的结果都是经过归一化(相对于整张图片来说)
-    boxes = yolo_correct_boxes(box_xy, box_wh, input_shape, image_shape) #根据图片的实际大小，计算实际左上与右下坐标点
+    boxes = yolo_correct_boxes(box_xy, box_wh, input_shape, image_shape) #根据图片的实际大小，进行缩放来计算实际左上与右下坐标点
     boxes = K.reshape(boxes, [-1, 4])                                    #保持第四维度不变，重新排序（对于每一张图片而言）
     box_scores = box_confidence * box_class_probs                        #置信度x类别信息，得出类别概论
     box_scores = K.reshape(box_scores, [-1, num_classes])                #保持第四维度不变，重新排序（对于每一张图片而言）与坐标信息一直
     return boxes, box_scores                                             #返回排序好的坐标信息与维度信息
-
 
 def yolo_eval(yolo_outputs,                                             
               anchors,
@@ -255,6 +250,7 @@ def yolo_eval(yolo_outputs,
               iou_threshold=.5):
     """Evaluate YOLO model on given input and return filtered boxes."""
     num_layers = len(yolo_outputs)                                                      #具体计算评估预测值
+    #输出层数量
     anchor_mask = [[6,7,8], [3,4,5], [0,1,2]] if num_layers==3 else [[3,4,5], [1,2,3]] # default setting
     input_shape = K.shape(yolo_outputs[0])[1:3] * 32                                   # 最小一层13x32=416，回归图片输入大小
     boxes = []                                                                         # 定义boxes_list
@@ -264,11 +260,13 @@ def yolo_eval(yolo_outputs,
             anchors[anchor_mask[l]], num_classes, input_shape, image_shape)            # 这里需要注意的是13x13对应的是最大的anchor box尺寸
         boxes.append(_boxes)                                                           
         box_scores.append(_box_scores)                                                 # 这里根据排序将boxes 坐标与概率得分各层合并
+        #计算每一层的boxes 与box_socres 每一层的boxes坐标点与box_scores得分的索引是11对应的
     boxes = K.concatenate(boxes, axis=0)                                               # 进行最外层合并，根据上面操作需要
+    #再最外层合并后，会减少一个维度成为二维数组
     box_scores = K.concatenate(box_scores, axis=0)                                     # 进行最外层合并，根据上面操作需要 
-
-    mask = box_scores >= score_threshold                                               # 过滤掉得分小于.6的点 其他都是1
-    max_boxes_tensor = K.constant(max_boxes, dtype='int32')                            # 重定义max_box的值的类型
+    #在最外层合并后，会减少一个维度
+    mask = box_scores >= score_threshold                                               # 过滤掉得分小于score_threshold的点 其他都是1 形成掩码的容器
+    max_boxes_tensor = K.constant(max_boxes, dtype='int32')                            # 重定义max_box的值的类型并形成tensor
     boxes_ = []                                                                        # 定义boxes_的list
     scores_ = []                                                                       # 定义list 
     classes_ = []                                                                      # 定义类别信息
@@ -277,13 +275,16 @@ def yolo_eval(yolo_outputs,
         class_boxes = tf.boolean_mask(boxes, mask[:, c])
         class_box_scores = tf.boolean_mask(box_scores[:, c], mask[:, c])               #过滤出针对每一类的box与box_scores
         nms_index = tf.image.non_max_suppression(
-            class_boxes, class_box_scores, max_boxes_tensor, iou_threshold=iou_threshold) #极大化计算，排序加iou计算 输出最终的index_num
-        class_boxes = K.gather(class_boxes, nms_index)                                    #根据索引取出index box
-        class_box_scores = K.gather(class_box_scores, nms_index)                          #根据索引取出index_box_scores
-        classes = K.ones_like(class_box_scores, 'int32') * c                              #生成类别信息矩阵
-        boxes_.append(class_boxes)                                                        #
+            class_boxes, class_box_scores, max_boxes_tensor, iou_threshold=iou_threshold) #极大化计算，排序加iou计算 输出最终的index_num[]的列表
+        class_boxes = K.gather(class_boxes, nms_index)                                    #取出nms_index列表中对应的索引号，重class_boxes中取出对应box，来后重新赋值class_boxes
+        class_box_scores = K.gather(class_box_scores, nms_index)                          #同上
+        classes = K.ones_like(class_box_scores, 'int32') * c                              #根据classes_box_scores生成类别信息矩阵，本矩阵二维矩阵[n,1] n为图片中监测到的对象数量，元素为类别的索引index
+        boxes_.append(class_boxes)                                                        
+        #将boxes信息放入到boxes中
         scores_.append(class_box_scores)
+        #将得分信息放入到scores中
         classes_.append(classes)
+        #将类别信息放入到classes中
     boxes_ = K.concatenate(boxes_, axis=0)
     scores_ = K.concatenate(scores_, axis=0)
     classes_ = K.concatenate(classes_, axis=0)                                            #合并各类信息
@@ -412,7 +413,7 @@ def box_iou(b1, b2):
     intersect_mins = K.maximum(b1_mins, b2_mins)       #进行左上交叉点计算 维度变为[i1,i2,i3,...iN,j,2]
     intersect_maxes = K.minimum(b1_maxes, b2_maxes)    #进行右下交叉点计算 维度变为[i1,i2,i3....iN,j,2]
     intersect_wh = K.maximum(intersect_maxes - intersect_mins, 0.)  #进行wh 维度[i1,i2,i3....iN,j,2]
-    intersect_area = intersect_wh[..., 0] * intersect_wh[..., 1]    #进行交集计算[i1,i2,i3....iN,j] 这里需要注意的时tensor运算，如果切边结果保留多个数值，运算结果末尾保留维度，如果切边结果保留一个数值，运算结果删除维度
+    intersect_area = intersect_wh[..., 0] * intersect_wh[..., 1]    #进行交集计算[i1,i2,i3....iN,j] 这里需要注意的时tensor运算，如果切边结果保留多个数值，运算结果末尾保留维度，如果切边结果保留一个数值，运算结果删除维度 也就是[0:1],[0]维度保留策略是不同的
     b1_area = b1_wh[..., 0] * b1_wh[..., 1]                         #进行面积计算[i1,i2,i3....iN,j]
     b2_area = b2_wh[..., 0] * b2_wh[..., 1]                         #进行面积计算[i1,i2,i3....iN,j]
     iou = intersect_area / (b1_area + b2_area - intersect_area)      #进行iou计算[i1,i2,i3....iN,j]
