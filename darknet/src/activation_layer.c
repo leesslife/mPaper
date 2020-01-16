@@ -9,9 +9,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-layer make_activation_layer(int batch, int inputs, ACTIVATION activation)
+layer make_activation_layer(int batch, int inputs, ACTIVATION activation)  //用来形成激活层，三个参数分别为batch inputs以及激活枚举类型 ACTIVATION 定义在darknet.h,中，表示某个激活函数
 {
-    layer l = {0};
+    layer l = {0};  //layer代表了层相关的所有参数
     l.type = ACTIVE;
 
     l.inputs = inputs;

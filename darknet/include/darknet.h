@@ -48,6 +48,7 @@ tree *read_tree(char *filename);
 typedef enum{
     LOGISTIC, RELU, RELIE, LINEAR, RAMP, TANH, PLSE, LEAKY, ELU, LOGGY, STAIR, HARDTAN, LHTAN, SELU
 } ACTIVATION;
+//枚举类型定义了各种激活函数
 
 typedef enum{
     PNG, BMP, TGA, JPG
@@ -419,7 +420,7 @@ struct layer{
     cudnnConvolutionBwdFilterAlgo_t bf_algo;
 #endif
 #endif
-};
+};//定义了层计算相关的所有参数
 
 void free_layer(layer);
 
