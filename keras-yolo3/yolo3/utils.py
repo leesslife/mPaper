@@ -32,7 +32,7 @@ def compose(*funcs):
 
 def letterbox_image(image, size):
     '''resize image with unchanged aspect ratio using padding'''
-    #改变图片的大小，保持图片的纵横比不变，使用padding(这里表示图片的纵横比保持不变，是的外边框正好能够展示图片，多于部分用0来填充)
+    #改变图片的大小，保持图片的纵横比不变，使用padding(这里表示图片的纵横比保持不变，是的外边框正好能够展示图片，多于部分用128来填充)
     iw, ih = image.size                 #图片的真实大小
     w, h = size                         #所需尺寸呢的大小
     scale = min(w/iw, h/ih)             #尺度比值，取小的值，以iw，ih中大的为主
@@ -40,7 +40,7 @@ def letterbox_image(image, size):
     nh = int(ih*scale)
     #同时缩放，图像大边被缩放至所需大小，小边则按同比例缩放
     image = image.resize((nw,nh), Image.BICUBIC)      #改变图片的大小，BICUBIC是一种差值算法具体
-    new_image = Image.new('RGB', size, (128,128,128))
+    new_image = Image.new('RGB', size, (128,128,128))  #新建画布，背景为(128,128,128)
     new_image.paste(image, ((w-nw)//2, (h-nh)//2))    #居中图像在画布中间
     return new_image
 

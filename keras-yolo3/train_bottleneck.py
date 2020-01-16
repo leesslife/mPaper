@@ -47,7 +47,7 @@ def _main():
     early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=1)
     #设定早停
     #EarlyStopping
-    #monitor 要监控的量
+    #monitor 要监控的值
     #min_delta: monitor的最小变化，如果绝对值小于min_delta，则视为没有改善
     #patience: 没有改善的时期数，之后训练将被停止。
     #verbose:  详细模式，与mode有关。

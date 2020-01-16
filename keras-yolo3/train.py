@@ -59,16 +59,18 @@ def _main():
     #开始时随机打乱行数
     np.random.seed(None)
     num_val = int(len(lines)*val_split)
+    #验证集数量
     num_train = len(lines) - num_val
-
+    #训练集数量
     # Train with frozen layers first, to get a stable loss.
     # Adjust num epochs to your dataset. This step is enough to obtain a not bad model.
     if True:
         model.compile(optimizer=Adam(lr=1e-3), loss={
             # use custom yolo_loss Lambda layer.
             'yolo_loss': lambda y_true, y_pred: y_pred})
-
+        #编译并定义损失函数
         batch_size = 32
+        #batch_size定义
         print('Train on {} samples, val on {} samples, with batch size {}.'.format(num_train, num_val, batch_size))
         model.fit_generator(data_generator_wrapper(lines[:num_train], batch_size, input_shape, anchors, num_classes),
                 steps_per_epoch=max(1, num_train//batch_size),
@@ -77,13 +79,22 @@ def _main():
                 epochs=50,
                 initial_epoch=0,
                 callbacks=[logging, checkpoint])
+        #训练与验证
+        #第一个data_generator_wrapper产生训练集合
+        #第二个data_generator_wrapper产生验证集合
+        #steps_per_epoch一个周期产生的步数
+        #validation_steps验证集步数
+        #周期数量50
+        #初始化周期
         model.save_weights(log_dir + 'trained_weights_stage_1.h5')
-
+        #保存权重
     # Unfreeze and continue training, to fine-tune.
     # Train longer if the result is not good.
+    #如果训练周期不够好，解冻模型
     if True:
         for i in range(len(model.layers)):
             model.layers[i].trainable = True
+            #解冻模型
         model.compile(optimizer=Adam(lr=1e-4), loss={'yolo_loss': lambda y_true, y_pred: y_pred}) # recompile to apply the change
         print('Unfreeze all of the layers.')
 
@@ -97,7 +108,7 @@ def _main():
             initial_epoch=50,
             callbacks=[logging, checkpoint, reduce_lr, early_stopping])
         model.save_weights(log_dir + 'trained_weights_final.h5')
-
+        #同上
     # Further training if needed.
 
 

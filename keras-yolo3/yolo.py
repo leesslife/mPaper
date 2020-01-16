@@ -156,108 +156,164 @@ class YOLO(object):  #船舰yolo类，这里object负责为传入参数
             assert self.model_image_size[0]%32 == 0, 'Multiples of 32 required'          #需要32的倍数，否则输出错误提示
             assert self.model_image_size[1]%32 == 0, 'Multiples of 32 required'          #同上
             boxed_image = letterbox_image(image, tuple(reversed(self.model_image_size)))
+            #根据tuple提供的尺寸来重新定义图片，图片放大居中并且，刚好能够全部显示图片，model_image_size两个尺寸是wh，我们需要的是hw的所以需要reversed
             #letterbox_image
         else:
             new_image_size = (image.width - (image.width % 32),
                               image.height - (image.height % 32))
+            #如果new_image_size没有定义，那么我们重新定义图片的尺寸，尺寸定义如上所示
             boxed_image = letterbox_image(image, new_image_size)
+            #同上
         image_data = np.array(boxed_image, dtype='float32')
+        #根据修改并居中的图像数据，生成np容器
 
         print(image_data.shape)
         image_data /= 255.
+        #将像素归一化
         image_data = np.expand_dims(image_data, 0)  # Add batch dimension.
-
+        #增加第0维度，就是batch维度
         out_boxes, out_scores, out_classes = self.sess.run(
             [self.boxes, self.scores, self.classes],
-            feed_dict={
-                self.yolo_model.input: image_data,
+            #这边是需要计算的数据
+            feed_dict={                               #计算self.boxes,self.scores,self.classes所需要喂的数据
+                self.yolo_model.input: image_data,    
+                #Input(shape=(None,None,3)，只要三维就可以了，这里为什么要增加batch维度呢？这和训练时的状态有关
+                #model = Model([model_body.input, *y_true], model_loss)，这里的model_body_input(none,none,3)就可以了，model_loss也就时个单值就行了
+                #但在训练时, yield [image_data, *y_true], np.zeros(batch_size),这里的image_data,*y_true,np.zeros(都是多维数组),对应于batch_size维度
+                #所以我们在具体使用模型时最好加上第0维度,也就是batch_size
                 self.input_image_shape: [image.size[1], image.size[0]],
+                #input_image_shape 需要将wh 转化为hw
                 K.learning_phase(): 0
+                #指定模型类型0：测试模型，1：训练模型
             })
 
         print('Found {} boxes for {}'.format(len(out_boxes), 'img'))
-
+        #打印对应图片对象输出的数量
         font = ImageFont.truetype(font='font/FiraMono-Medium.otf',
                     size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+        #确定图片中字体的类型与大小
         thickness = (image.size[0] + image.size[1]) // 300
+        #确定图片中的线宽
 
         for i, c in reversed(list(enumerate(out_classes))):
+            #i代表out_classes的下标索引，c代表out_classes的具体值
             predicted_class = self.class_names[c]
+            #所预测的具体对象的类名
             box = out_boxes[i]
+            #将当前对应的box取出来对应的应该是xmin,ymin,xmax,ymax
             score = out_scores[i]
-
+            #将当前对象的得分取出来
             label = '{} {:.2f}'.format(predicted_class, score)
+            #设定标签格式(预测类型的得分)
             draw = ImageDraw.Draw(image)
+            #设定画版
             label_size = draw.textsize(label, font)
-
+            #往画板中嵌入字体式样，并计算得出label_size大小
             top, left, bottom, right = box
+            #往box中取出xmin,ymin,xmax,ymax
             top = max(0, np.floor(top + 0.5).astype('int32'))
+            #重置top的位置，为top往下0.5但不能小于0
             left = max(0, np.floor(left + 0.5).astype('int32'))
+            #重置left的位置，为left往右0.5但不能小于0
             bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
+            #重置bottom的位置，为bottom往下0.5但不能大于图片尺寸
             right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
+            #重置right的位置，为right往右0.5但不能大于图片尺寸
             print(label, (left, top), (right, bottom))
 
             if top - label_size[1] >= 0:
+                #如果top-label_size[1](h)大于0 ，那么test_origin初始位置如下
                 text_origin = np.array([left, top - label_size[1]])
             else:
                 text_origin = np.array([left, top + 1])
-
+                #否则那么test_origin初始位置如上
             # My kingdom for a good redistributable image drawing library.
             for i in range(thickness):
                 draw.rectangle(
                     [left + i, top + i, right - i, bottom - i],
                     outline=self.colors[c])
+                    #根据thickness多画几条线，确定线的厚度
             draw.rectangle(
                 [tuple(text_origin), tuple(text_origin + label_size)],
                 fill=self.colors[c])
+                #画标签框的矩形
             draw.text(text_origin, label, fill=(0, 0, 0), font=font)
+            #最后将label写上
             del draw
+            #删除画板
 
         end = timer()
+        #计算一张图片的结束时间
         print(end - start)
+        #打印结束时间
         return image
-
+        #返回图片
     def close_session(self):
         self.sess.close()
+        #关闭会话
 
-def detect_video(yolo, video_path, output_path=""):
+def detect_video(yolo, video_path, output_path=""): #通过opencv2来侦测视频中的数据
     import cv2
     vid = cv2.VideoCapture(video_path)
+    #获取视频路径，也可以是特定摄像头
     if not vid.isOpened():
         raise IOError("Couldn't open webcam or video")
     video_FourCC    = int(vid.get(cv2.CAP_PROP_FOURCC))
+    #获取视频编码格式
     video_fps       = vid.get(cv2.CAP_PROP_FPS)
+    #获取视频帧数
     video_size      = (int(vid.get(cv2.CAP_PROP_FRAME_WIDTH)),
                         int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    #获取视频尺寸大小
     isOutput = True if output_path != "" else False
+    #如果output存在isOutput 设定为True
     if isOutput:
         print("!!! TYPE:", type(output_path), type(video_FourCC), type(video_fps), type(video_size))
         out = cv2.VideoWriter(output_path, video_FourCC, video_fps, video_size)
     accum_time = 0
+    #精确计时器
     curr_fps = 0
+    #当前计时器
     fps = "FPS: ??"
+    #帧率字符串
     prev_time = timer()
+    #当前计时器
     while True:
         return_value, frame = vid.read()
+        #从视频或摄像头中读取帧与返回值
         image = Image.fromarray(frame)
+        #从帧数组中读取图像数据
         image = yolo.detect_image(image)
+        #检测图像并标出对象
         result = np.asarray(image)
+        #将image np对象变为array
         curr_time = timer()
+        #计算当前时间
         exec_time = curr_time - prev_time
+        #计算执行时间
         prev_time = curr_time
+        #将当前时间变为先前时间，为下一帧图片做准备
         accum_time = accum_time + exec_time
+        #累计执行时间
         curr_fps = curr_fps + 1
+        #获取下一帧数
         if accum_time > 1:
             accum_time = accum_time - 1
             fps = "FPS: " + str(curr_fps)
             curr_fps = 0
+        #当累计执行时间大于1秒，则输出每秒帧数，并将curr_fps=0,accum_time=accum_time-1
         cv2.putText(result, text=fps, org=(3, 15), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                     fontScale=0.50, color=(255, 0, 0), thickness=2)
+        #在每一帧图片上放置result,设定text内容，位置，字体格式，字体大小，颜色以及线条粗细等
         cv2.namedWindow("result", cv2.WINDOW_NORMAL)
+        #命名窗口
         cv2.imshow("result", result)
+        #显示内容
         if isOutput:
             out.write(result)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        #如果isOutput，在out_path路径下保存视频
+        if cv2.waitKey(1) & 0xFF == ord('q'):#如果按下q则跳出循环
             break
     yolo.close_session()
+    #关闭会话
 
