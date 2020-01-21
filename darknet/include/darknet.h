@@ -89,7 +89,7 @@ typedef enum {
     LOGXENT,
     L2NORM,
     BLANK
-} LAYER_TYPE;
+} LAYER_TYPE; //层的枚举类型
 
 typedef enum{
     SSE, MASKED, L1, SEG, SMOOTH,WGAN
@@ -114,17 +114,17 @@ struct layer;
 typedef struct layer layer;
 
 struct layer{
-    LAYER_TYPE type;
-    ACTIVATION activation;
-    COST_TYPE cost_type;
-    void (*forward)   (struct layer, struct network);
-    void (*backward)  (struct layer, struct network);
-    void (*update)    (struct layer, update_args);
-    void (*forward_gpu)   (struct layer, struct network);
-    void (*backward_gpu)  (struct layer, struct network);
-    void (*update_gpu)    (struct layer, update_args);
-    int batch_normalize;
-    int shortcut;
+    LAYER_TYPE type;                //层类型的枚举类型
+    ACTIVATION activation;          //激活函数类型
+    COST_TYPE cost_type;            //代价函数类型
+    void (*forward)   (struct layer, struct network);  //前向计算*
+    void (*backward)  (struct layer, struct network);  //反向计算*
+    void (*update)    (struct layer, update_args);     //更新网络*
+    void (*forward_gpu)   (struct layer, struct network);  //前向计算GPU
+    void (*backward_gpu)  (struct layer, struct network);  //反向计算GPU
+    void (*update_gpu)    (struct layer, update_args);   //更新网络gpu
+    int batch_normalize;                                //batch_normlize flag？
+    int shortcut;                                       //
     int batch;
     int forced;
     int flipped;
@@ -429,54 +429,54 @@ typedef enum {
 } learning_rate_policy;
 
 typedef struct network{
-    int n;
-    int batch;
-    size_t *seen;
-    int *t;
-    float epoch;
-    int subdivisions;
-    layer *layers;
-    float *output;
-    learning_rate_policy policy;
+    int n;                            //n应该是网络层数
+    int batch;                        //batch是训练时batch数量
+    size_t *seen;                     //seen 时unsigned int
+    int *t;                           //整数数组
+    float epoch;                      //训练的周期数
+    int subdivisions;                 //如何划分训练数据和测试数据
+    layer *layers;                    //层参数指针
+    float *output;                    //float数组 ，是输出层的数据
+    learning_rate_policy policy;      //学习率变更策略
 
-    float learning_rate;
-    float momentum;
-    float decay;
-    float gamma;
-    float scale;
-    float power;
-    int time_steps;
-    int step;
-    int max_batches;
-    float *scales;
-    int   *steps;
-    int num_steps;
-    int burn_in;
+    float learning_rate;              //学习率
+    float momentum;                   //？
+    float decay;                      //？
+    float gamma;                      //？
+    float scale;                      //？
+    float power;                      //？
+    int time_steps;                   //？
+    int step;                         //？
+    int max_batches;                  //最大batches数量
+    float *scales;                    //？
+    int   *steps;                     //？
+    int num_steps;                    //？
+    int burn_in;                      //？
 
-    int adam;
-    float B1;
-    float B2;
-    float eps;
+    int adam;                         //adam参数
+    float B1;                         //B1参数
+    float B2;                         //？
+    float eps;                        //？
 
-    int inputs;
-    int outputs;
-    int truths;
-    int notruth;
-    int h, w, c;
-    int max_crop;
-    int min_crop;
-    float max_ratio;
-    float min_ratio;
-    int center;
-    float angle;
-    float aspect;
-    float exposure;
-    float saturation;
-    float hue;
-    int random;
+    int inputs;                       //？
+    int outputs;                      //？
+    int truths;                       //？
+    int notruth;                      //？
+    int h, w, c;                      //当前网络的h,w,c
+    int max_crop;                     //?
+    int min_crop;                     //?
+    float max_ratio;                  //?
+    float min_ratio;                  //?
+    int center;                       //?
+    float angle;                      //?
+    float aspect;                     //?
+    float exposure;                   //?
+    float saturation;                 //HSV 饱和度
+    float hue;                        //h？
+    int random;                       //随机数
 
-    int gpu_index;
-    tree *hierarchy;
+    int gpu_index;                    //gpu_index gpu索引
+    tree *hierarchy;                  //树状？
 
     float *input;
     float *truth;

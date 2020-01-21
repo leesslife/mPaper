@@ -11,10 +11,11 @@
 
 layer make_activation_layer(int batch, int inputs, ACTIVATION activation)  //用来形成激活层，三个参数分别为batch inputs以及激活枚举类型 ACTIVATION 定义在darknet.h,中，表示某个激活函数
 {
-    layer l = {0};  //layer代表了层相关的所有参数
-    l.type = ACTIVE;
+    layer l = {0};  //layer代表了层相关的所有参数，{0}代表初始化为全0，所有参数置空
+    l.type = ACTIVE; //确定激活层类型
 
-    l.inputs = inputs;
+    l.inputs = inputs;  //这边大哥问号，这边代表的
+    
     l.outputs = inputs;
     l.batch=batch;
 
