@@ -38,8 +38,8 @@
 #include "utils.h"
 
 typedef struct{
-    char *type;
-    list *options;
+    char *type;                  //字符串
+    list *options;               //链表指针
 }section;
 
 list *read_cfg(char *filename);
@@ -121,14 +121,14 @@ void parse_data(char *data, float *a, int n)
 typedef struct size_params{
     int batch;
     int inputs;
-    int h;
-    int w;
-    int c;
-    int index;
+    int h;                        //h图像高度
+    int w;                        //w图像宽度
+    int c;                        //c图像通道数
+    int index; 
     int time_steps;
-    network *net;
+    network *net;                 //net结构体头指针
 } size_params;
-
+//网络结构大小的相关参数
 local_layer parse_local(list *options, size_params params)
 {
     int n = option_find_int(options, "filters",1);
@@ -737,21 +737,38 @@ int is_network(section *s)
 {
     return (strcmp(s->type, "[net]")==0
             || strcmp(s->type, "[network]")==0);
+    //判断首section的type值是不是[net]或[network] 如果不是则返回0
 }
 
 network *parse_network_cfg(char *filename)
 {
-    list *sections = read_cfg(filename);
-    node *n = sections->front;
-    if(!n) error("Config file has no sections");
-    network *net = make_network(sections->size - 1);
-    net->gpu_index = gpu_index;
-    size_params params;
+    list *sections = read_cfg(filename);             //读取配置文件 生成一个带有两层node双向链表的list 指针
+    node *n = sections->front;                       //建立一个node指针，指向section双向链表首节点
+    if(!n) error("Config file has no sections");     //如果n不存在，则打印出错误信息
+    network *net = make_network(sections->size - 1); //根据sections->size 生成多层net网络，section->size-1 是因为要去除第一层[net]下的参数说明
+    //以上make_network仅仅分配内存区域，但没有初始化具体值
+    net->gpu_index = gpu_index;                      //使用GPU时，GPU_index 索引
+    size_params params;                              //生成一个params结构体 如下
+    /*typedef struct size_params{
+        int batch;
+        int inputs;
+        int h;                        //h图像高度
+        int w;                        //w图像宽度
+        int c;                        //c图像通道数
+        int index; 
+        int time_steps;
+        network *net;                 //net结构体头指针
+    } size_params;
+    //网络结构大小的相关参数*/
 
     section *s = (section *)n->val;
+    //将section链表中头节点的void *val值取出，这个val指向一个section(void *val,list *options) 结构体
     list *options = s->options;
+    //获取头section 中的node双向链表取出，这个双向链表通常存储着，"[net]"层下的各个key,val键值内容，是net网络的常用参数
     if(!is_network(s)) error("First section must be [net] or [network]");
+    //is_network判断是否首sections 的type是否满足[net]或[network]的条件，如果不是则返回错误提示
     parse_net_options(options, net);
+    //解析网络参数，将其存入到net结构体中
 
     params.h = net->h;
     params.w = net->w;
@@ -890,39 +907,67 @@ network *parse_network_cfg(char *filename)
 
 list *read_cfg(char *filename)
 {
-    FILE *file = fopen(filename, "r");
-    if(file == 0) file_error(filename);
-    char *line;
-    int nu = 0;
-    list *options = make_list();
-    section *current = 0;
-    while((line=fgetl(file)) != 0){
-        ++ nu;
-        strip(line);
-        switch(line[0]){
-            case '[':
-                current = malloc(sizeof(section));
-                list_insert(options, current);
-                current->options = make_list();
+    FILE *file = fopen(filename, "r");          //打开文件
+    if(file == 0) file_error(filename);         //如果文件==0 打印文件错误
+    char *line;                                 //行字符串
+    int nu = 0;                                 //？
+    list *options = make_list();                //创建一个空的node双向链表 长度为0，首指针为null 末指针为null
+    /*typedef struct list{
+        int size;
+        node *front;
+        node *back;
+    } list;*/
+    section *current = 0;                       //创建一个结构体，如下所示
+    /*typedef struct{
+        char *type;                  //字符串
+        list *options;               //链表指针
+    }section;*/
+
+    while((line=fgetl(file)) != 0){            //根据行来读取网络，每一行为一个字符串
+        ++ nu;                                 //nu++ 初始为0
+        strip(line);                           //在行中去除' ' '\t' '\n'
+        switch(line[0]){                       //取出首字母来判断进行何种操作
+            case '[':                          //如果首字母是'['则进行如下操作  通常可能为‘[net]’,'[convolutional]'等
+                current = malloc(sizeof(section));       //分别一个section 内存空间给current
+                list_insert(options, current);           //options 是个list size front back 都是0
+                //options 是初始个空的list 双向链表，list_insert 在内部建立一个node节点(void *val,node *prev,node *next)
+                //void *val 指向current指向的内容，node->prev node->next 都指向null
+                //之后(比如第二个"[]"之后)options 就不是个空的list了，那么list_insert 在内部建立node ，void *val 指向current指向的内容，然后根据双向列表原则插入node，node->next->null
+                //current 中指向的section(char* type ,list *options)中，type是个字符串，options却又指向另外一个双向列表
+                current->options = make_list(); 
+                //对current->options 同上操作         
                 current->type = line;
+                //将字符串赋值给current->type
+                //实在不行可以画图理解
                 break;
             case '\0':
             case '#':
             case ';':
                 free(line);
+                //释放line的字符串内容
                 break;
             default:
                 if(!read_option(line, current->options)){
+                    //1）解析line =号前面的是key =号后面的是val
+                    //2）往current->options指向的node双向链表中插入node节点，根据双向链表插入原则插入node节点
+                    //3）node节点中node->val指向一个kvp结构体，kvp->key=key ,kvp->val=val,kvp->used==0 默认等于0 
                     fprintf(stderr, "Config file error line %d, could parse: %s\n", nu, line);
+                    //4）如果读取插入node双向链表失败，则输出行和行内容
                     free(line);
+                    //5）最后将line释放
                 }
                 break;
         }
     }
-    fclose(file);
-    return options;
+    fclose(file);//关闭文件句柄
+    return options;//返回根指针
 }
-
+//以上操作做了以下内容
+//1）打开配置文件
+//2）读取每个"[xxx]" 的内容，并按照从上到下的方式分配node节点，并插入到rootOptions list 指向的node双向链表中
+//3）rootOptions指向的双向链表的每个node的val 指向一个section结构体，
+//4) section->type字符串,其中的内容为"[xxx]" section->options 指向另外一个双向链表
+//5) section->options的node节点，代表"[xxx]"下的每一行内容,node->val指向kvp结构体，内容参考上面所示 
 void save_convolutional_weights_binary(layer l, FILE *fp)
 {
 #ifdef GPU

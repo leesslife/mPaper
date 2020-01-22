@@ -9,7 +9,7 @@ list *make_list()
 	l->front = 0;
 	l->back = 0;
 	return l;
-}
+} //以上创建一个空的node链表，size代表链表长度，front代表链表首节点，back代表末节点这里都是空的
 
 /*
 void transfer_node(list *s, list *d, node *n)
@@ -37,21 +37,26 @@ void *list_pop(list *l){
     return val;
 }
 
-void list_insert(list *l, void *val)
+void list_insert(list *l, void *val)          //链表插入操作？
 {
-	node *new = malloc(sizeof(node));
-	new->val = val;
-	new->next = 0;
+	node *new = malloc(sizeof(node));         //建立一个node指针 分配空间
+	/*typedef struct node{
+    	void *val;
+    	struct node *next;
+    	struct node *prev;
+    } node; //node节点，next指向下一个节点 prev指向前一个节点*/
+	new->val = val;                           //将val指针指向 val指向的内容
+	new->next = 0;                            //node的next指向空
 
-	if(!l->back){
-		l->front = new;
-		new->prev = 0;
-	}else{
-		l->back->next = new;
-		new->prev = l->back;
+	if(!l->back){                             //如果list l指针的尾指针不存在，进行以下操作
+		l->front = new;                       //l->back如果是空的，说明list对应的链表中没有其他节点
+		new->prev = 0;                        //将new node节点前后都清空 l->front前指针指向new指向的内容
+	}else{                                    //如果l->back指针是非空的，说明list对应的链表中本就存在node节点，可以执行以下操作
+		l->back->next = new;				  //首先将l->back指向的末节点 node的next指针指向new节点
+		new->prev = l->back;                  //然后new->prev指向原来末尾指针，完成双向链表的插入操作
 	}
-	l->back = new;
-	++l->size;
+	l->back = new;                            //最后list *l指针指向的list 中的back指针指向new，完成list 对于双向链表的首尾指向操作
+	++l->size;                                //list->size的大小加1
 }
 
 void free_node(node *n)

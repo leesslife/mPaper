@@ -52,11 +52,11 @@ load_args get_base_args(network *net)
 
 network *load_network(char *cfg, char *weights, int clear)
 {
-    network *net = parse_network_cfg(cfg);
-    if(weights && weights[0] != 0){
-        load_weights(net, weights);
+    network *net = parse_network_cfg(cfg);  //解析配置网络
+    if(weights && weights[0] != 0){        
+        load_weights(net, weights);         //登录权重文件
     }
-    if(clear) (*net->seen) = 0;
+    if(clear) (*net->seen) = 0;             //清除网络
     return net;
 }
 
@@ -177,12 +177,19 @@ char *get_layer_string(LAYER_TYPE a)
 network *make_network(int n)
 {
     network *net = calloc(1, sizeof(network));
+    //生成一个net指针，指向仅一个network-size 的大小区域
     net->n = n;
+    //n代表网络的层数
     net->layers = calloc(net->n, sizeof(layer));
+    //生成一个 layers指针，分配一段区域，大小为n倍的layer-size，每个layer-size代表网络的一个层
     net->seen = calloc(1, sizeof(size_t));
+    //分配给seen指针 1xsizeof(size_t)的内存区域 seen是？
     net->t    = calloc(1, sizeof(int));
+    //分配给t指针 1xsizeof(t)的内存区域 t是？
     net->cost = calloc(1, sizeof(float));
+    //分配给cost指针 1xsizeof(float)的内存区域 cost应该是最终的损失函数值
     return net;
+    //放回net指针
 }
 
 void forward_network(network *netp)

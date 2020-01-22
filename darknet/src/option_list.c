@@ -51,29 +51,38 @@ metadata get_metadata(char *file)
 
 int read_option(char *s, list *options)
 {
-    size_t i;
-    size_t len = strlen(s);
-    char *val = 0;
-    for(i = 0; i < len; ++i){
-        if(s[i] == '='){
-            s[i] = '\0';
-            val = s+i+1;
-            break;
+    size_t i;                        //系统int 32位unsigned int 64位的话是long unsigned int                
+    size_t len = strlen(s);          //对应的字符串长度
+    char *val = 0;                   //新建字符串，val初始值为0，就是指空指针
+    for(i = 0; i < len; ++i){        //遍历整个字符串
+        if(s[i] == '='){             //找到"=",
+            s[i] = '\0';             //将等号变为字符串结束语"\0"
+            val = s+i+1;             //将val跳转到"="下一步的位置
+            break;                   //跳出当前循环
         }
-    }
-    if(i == len-1) return 0;
-    char *key = s;
+    }                                
+    if(i == len-1) return 0;         //i==len-1指代没有找到"=" return 0
+    char *key = s;                   //key代表 =号前面的字符串
+    //val代表等号后面的字符串
     option_insert(options, key, val);
+    //往options的node双向链表中 插入node节点，node->val 指向kvp kvp->key=key ,kvp->val=val,kvp->used=0默认值。
     return 1;
 }
 
 void option_insert(list *l, char *key, char *val)
 {
-    kvp *p = malloc(sizeof(kvp));
+    kvp *p = malloc(sizeof(kvp));  
+    /*typedef struct{
+        char *key;
+        char *val;
+        int used;
+    } kvp; //一个结构体，key代表键的字符串，val代表指的字符串，used？*/
     p->key = key;
     p->val = val;
     p->used = 0;
+    //p->used=0 代表未被使用？
     list_insert(l, p);
+    //将p插入(list)l指针指向的node双向链表中，node->val 指向p
 }
 
 void option_unused(list *l)

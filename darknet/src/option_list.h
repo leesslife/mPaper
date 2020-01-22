@@ -6,7 +6,7 @@ typedef struct{
     char *key;
     char *val;
     int used;
-} kvp;
+} kvp; //一个结构体，key代表键的字符串，val代表指的字符串，used？
 
 
 int read_option(char *s, list *options);

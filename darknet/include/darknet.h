@@ -478,14 +478,14 @@ typedef struct network{
     int gpu_index;                    //gpu_index gpu索引
     tree *hierarchy;                  //树状？
 
-    float *input;
-    float *truth;
-    float *delta;
-    float *workspace;
-    int train;
-    int index;
-    float *cost;
-    float clip;
+    float *input;                     //?
+    float *truth;                     //?
+    float *delta;                     //?
+    float *workspace;                 //?
+    int train;                        //?
+    int index;                        //?
+    float *cost;                      //?
+    float clip;                       //?
 
 #ifdef GPU
     float *input_gpu;
@@ -594,13 +594,13 @@ typedef struct node{
     void *val;
     struct node *next;
     struct node *prev;
-} node;
+} node; //node节点，next指向下一个节点 prev指向前一个节点
 
 typedef struct list{
     int size;
     node *front;
     node *back;
-} list;
+} list; //list链表，size代表链表的长度，node指向链表的首节点，back指向node末节点
 
 pthread_t load_data(load_args args);
 list *read_data_cfg(char *filename);

@@ -301,15 +301,15 @@ list *split_str(char *s, char delim)
 
 void strip(char *s)
 {
-    size_t i;
-    size_t len = strlen(s);
-    size_t offset = 0;
-    for(i = 0; i < len; ++i){
-        char c = s[i];
-        if(c==' '||c=='\t'||c=='\n') ++offset;
-        else s[i-offset] = c;
+    size_t i;                             //size_t 在32为系统中为unsigned int 在64位系统中为long unsigned int 
+    size_t len = strlen(s);               //字符串的长度
+    size_t offset = 0;                    //偏移offset
+    for(i = 0; i < len; ++i){             //遍历整个字符串
+        char c = s[i];                    //将当前字符保存下来
+        if(c==' '||c=='\t'||c=='\n') ++offset;        //是c==' '||c=='\t'||c=='\n'，offset加1
+        else s[i-offset] = c;                         //如果不满足以上条件，s[i-offset]=c
     }
-    s[len-offset] = '\0';
+    s[len-offset] = '\0';           //加上'\0' 给字符串来个结尾
 }
 
 void strip_char(char *s, char bad)
