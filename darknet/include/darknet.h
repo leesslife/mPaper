@@ -125,7 +125,7 @@ struct layer{
     void (*update_gpu)    (struct layer, update_args);   //更新网络gpu
     int batch_normalize;                                //batch_normlize flag？
     int shortcut;                                       //
-    int batch;
+    int batch;                                          //每个 batch的图像数量
     int forced;
     int flipped;
     int inputs;
@@ -134,8 +134,8 @@ struct layer{
     int nbiases;
     int extra;
     int truths;
-    int h,w,c;
-    int out_h, out_w, out_c;
+    int h,w,c;                                          //输入的图像高度，图像宽度，以及通道数
+    int out_h, out_w, out_c;                            //输出的out_h,out_w,out_c
     int n;
     int max_boxes;
     int groups;
@@ -431,10 +431,10 @@ typedef enum {
 typedef struct network{
     int n;                            //n应该是网络层数
     int batch;                        //batch是训练时batch数量
-    size_t *seen;                     //seen 时unsigned int
+    size_t *seen;                     //seen 时unsigned int?
     int *t;                           //整数数组
     float epoch;                      //训练的周期数
-    int subdivisions;                 //如何划分训练数据和测试数据
+    int subdivisions;                 //对batch的子划分，每个batch分成重新几份来训练 batch=batch/subdivisions
     layer *layers;                    //层参数指针
     float *output;                    //float数组 ，是输出层的数据
     learning_rate_policy policy;      //学习率变更策略
@@ -445,7 +445,7 @@ typedef struct network{
     float gamma;                      //？
     float scale;                      //？
     float power;                      //？
-    int time_steps;                   //？
+    int time_steps;                   //每一步的倍数，batch=batch*time_steps 在这之前 先计算batch=batch/subdivisions
     int step;                         //？
     int max_batches;                  //最大batches数量
     float *scales;                    //？

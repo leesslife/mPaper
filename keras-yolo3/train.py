@@ -51,7 +51,7 @@ def _main():
     #patience=10 当loss停止改善10个EPOCH之后就开始早停
     #verbose信息展示模式
     val_split = 0.1
-    #训练值与测试值 的分值线
+    #训练集与验证集 的分值线
     with open(annotation_path) as f:
         lines = f.readlines()
     np.random.seed(10101)

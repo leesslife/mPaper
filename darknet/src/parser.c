@@ -655,6 +655,7 @@ learning_rate_policy get_policy(char *s)
 void parse_net_options(list *options, network *net)
 {
     net->batch = option_find_int(options, "batch",1);
+    //在options 的node双向链表中，找到batch参数，返回batch key对应的val值，如果没有找到，则默认是1
     net->learning_rate = option_find_float(options, "learning_rate", .001);
     net->momentum = option_find_float(options, "momentum", .9);
     net->decay = option_find_float(options, "decay", .0001);
@@ -662,15 +663,23 @@ void parse_net_options(list *options, network *net)
     net->time_steps = option_find_int_quiet(options, "time_steps",1);
     net->notruth = option_find_int_quiet(options, "notruth",0);
     net->batch /= subdivs;
+    //重新划分batch，将batch重新变为batch/subdivs,这里将subdivs的作用说明了
     net->batch *= net->time_steps;
+    //重新变更batch 为batch*time_steps
     net->subdivisions = subdivs;
+    //将subdivs 赋值个net网络
     net->random = option_find_int_quiet(options, "random", 0);
-
+    //找到random参数，默认为0 random参数？
     net->adam = option_find_int_quiet(options, "adam", 0);
+    //找到adam参数，默认是0 adam？
     if(net->adam){
+        //当net->adam!=0时执行当前条件
         net->B1 = option_find_float(options, "B1", .9);
+        //B1参数赋值给网络B1
         net->B2 = option_find_float(options, "B2", .999);
+        //B1参数赋值给网络B2
         net->eps = option_find_float(options, "eps", .0000001);
+        //eps参数赋值给网络3
     }
 
     net->h = option_find_int_quiet(options, "height",0);
@@ -762,9 +771,9 @@ network *parse_network_cfg(char *filename)
     //网络结构大小的相关参数*/
 
     section *s = (section *)n->val;
-    //将section链表中头节点的void *val值取出，这个val指向一个section(void *val,list *options) 结构体
+    //将section链表中头节点的void *val值取出，这个val指向一个section(char *type,list *options) 结构体
     list *options = s->options;
-    //获取头section 中的node双向链表取出，这个双向链表通常存储着，"[net]"层下的各个key,val键值内容，是net网络的常用参数
+    //将头section 中的node双向链表取出，这个双向链表通常存储着，"[net]"层下的各个key,val键值内容，是net网络的常用参数
     if(!is_network(s)) error("First section must be [net] or [network]");
     //is_network判断是否首sections 的type是否满足[net]或[network]的条件，如果不是则返回错误提示
     parse_net_options(options, net);
