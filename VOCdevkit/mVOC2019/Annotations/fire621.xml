@@ -1,7 +1,7 @@
 <annotation>
 	<folder>fire</folder>
-	<filename>2ndfloorFULLYINVOLVEDHelmetCam8148.png</filename>
-	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\2ndfloorFULLYINVOLVEDHelmetCam8148.png</path>
+	<filename>CarOne394.png</filename>
+	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\CarOne394.png</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -12,39 +12,15 @@
 	</size>
 	<segmented>0</segmented>
 	<object>
-		<name>fire_l</name>
+		<name>fire_h</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>117</xmin>
-			<ymin>194</ymin>
-			<xmax>120</xmax>
-			<ymax>203</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>fire_l</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>123</xmin>
-			<ymin>201</ymin>
-			<xmax>127</xmax>
-			<ymax>210</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>fire_l</name>
-		<pose>Unspecified</pose>
-		<truncated>1</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>124</xmin>
-			<ymin>219</ymin>
-			<xmax>128</xmax>
-			<ymax>224</ymax>
+			<xmin>135</xmin>
+			<ymin>141</ymin>
+			<xmax>174</xmax>
+			<ymax>223</ymax>
 		</bndbox>
 	</object>
 	<object>
@@ -53,34 +29,10 @@
 		<truncated>1</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>177</xmin>
-			<ymin>197</ymin>
-			<xmax>188</xmax>
-			<ymax>224</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>fire_h</name>
-		<pose>Unspecified</pose>
-		<truncated>1</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>194</xmin>
-			<ymin>199</ymin>
-			<xmax>201</xmax>
-			<ymax>224</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>fire_h</name>
-		<pose>Unspecified</pose>
-		<truncated>1</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>149</xmin>
-			<ymin>159</ymin>
-			<xmax>209</xmax>
-			<ymax>224</ymax>
+			<xmin>1</xmin>
+			<ymin>134</ymin>
+			<xmax>86</xmax>
+			<ymax>221</ymax>
 		</bndbox>
 	</object>
 </annotation>

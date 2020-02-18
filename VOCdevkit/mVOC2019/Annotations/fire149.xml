@@ -1,7 +1,7 @@
 <annotation>
 	<folder>fire</folder>
-	<filename>barbecue532.png</filename>
-	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\barbecue532.png</path>
+	<filename>barbecue240.png</filename>
+	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\barbecue240.png</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -17,10 +17,10 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>62</xmin>
-			<ymin>84</ymin>
-			<xmax>111</xmax>
-			<ymax>185</ymax>
+			<xmin>94</xmin>
+			<ymin>53</ymin>
+			<xmax>121</xmax>
+			<ymax>191</ymax>
 		</bndbox>
 	</object>
 </annotation>

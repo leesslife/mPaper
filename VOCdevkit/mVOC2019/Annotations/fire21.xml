@@ -1,7 +1,7 @@
 <annotation>
 	<folder>fire</folder>
-	<filename>barbecue186.png</filename>
-	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\barbecue186.png</path>
+	<filename>2ndfloorFULLYINVOLVEDHelmetCam2974.png</filename>
+	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\2ndfloorFULLYINVOLVEDHelmetCam2974.png</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -17,94 +17,58 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>95</xmin>
-			<ymin>56</ymin>
-			<xmax>124</xmax>
-			<ymax>191</ymax>
+			<xmin>25</xmin>
+			<ymin>99</ymin>
+			<xmax>33</xmax>
+			<ymax>148</ymax>
 		</bndbox>
 	</object>
 	<object>
-		<name>fire_l</name>
+		<name>fire_h</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>126</xmin>
-			<ymin>86</ymin>
-			<xmax>140</xmax>
-			<ymax>101</ymax>
+			<xmin>65</xmin>
+			<ymin>98</ymin>
+			<xmax>86</xmax>
+			<ymax>178</ymax>
 		</bndbox>
 	</object>
 	<object>
-		<name>fire_l</name>
+		<name>fire_h</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>158</xmin>
-			<ymin>77</ymin>
-			<xmax>171</xmax>
-			<ymax>95</ymax>
+			<xmin>23</xmin>
+			<ymin>147</ymin>
+			<xmax>91</xmax>
+			<ymax>195</ymax>
 		</bndbox>
 	</object>
 	<object>
-		<name>fire_l</name>
+		<name>fire_h</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>147</xmin>
-			<ymin>72</ymin>
-			<xmax>161</xmax>
-			<ymax>90</ymax>
+			<xmin>86</xmin>
+			<ymin>96</ymin>
+			<xmax>91</xmax>
+			<ymax>129</ymax>
 		</bndbox>
 	</object>
 	<object>
-		<name>fire_l</name>
+		<name>fire_h</name>
 		<pose>Unspecified</pose>
-		<truncated>0</truncated>
+		<truncated>1</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>134</xmin>
-			<ymin>123</ymin>
-			<xmax>138</xmax>
-			<ymax>127</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>fire_l</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>188</xmin>
-			<ymin>12</ymin>
-			<xmax>194</xmax>
-			<ymax>15</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>fire_l</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>135</xmin>
-			<ymin>50</ymin>
-			<xmax>144</xmax>
-			<ymax>56</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>fire_l</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>107</xmin>
-			<ymin>214</ymin>
-			<xmax>113</xmax>
-			<ymax>221</ymax>
+			<xmin>123</xmin>
+			<ymin>1</ymin>
+			<xmax>129</xmax>
+			<ymax>17</ymax>
 		</bndbox>
 	</object>
 </annotation>

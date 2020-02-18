@@ -1,7 +1,7 @@
 <annotation>
 	<folder>fire</folder>
-	<filename>barbecue552.png</filename>
-	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\barbecue552.png</path>
+	<filename>barbecue260.png</filename>
+	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\barbecue260.png</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -18,9 +18,9 @@
 		<difficult>0</difficult>
 		<bndbox>
 			<xmin>92</xmin>
-			<ymin>130</ymin>
-			<xmax>116</xmax>
-			<ymax>176</ymax>
+			<ymin>51</ymin>
+			<xmax>122</xmax>
+			<ymax>189</ymax>
 		</bndbox>
 	</object>
 	<object>
@@ -29,22 +29,10 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>79</xmin>
-			<ymin>139</ymin>
-			<xmax>90</xmax>
-			<ymax>143</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>fire_h</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>68</xmin>
-			<ymin>96</ymin>
-			<xmax>87</xmax>
-			<ymax>113</ymax>
+			<xmin>121</xmin>
+			<ymin>128</ymin>
+			<xmax>129</xmax>
+			<ymax>138</ymax>
 		</bndbox>
 	</object>
 	<object>
@@ -53,10 +41,10 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>78</xmin>
-			<ymin>114</ymin>
-			<xmax>82</xmax>
-			<ymax>120</ymax>
+			<xmin>144</xmin>
+			<ymin>77</ymin>
+			<xmax>149</xmax>
+			<ymax>93</ymax>
 		</bndbox>
 	</object>
 	<object>
@@ -65,10 +53,34 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>47</xmin>
-			<ymin>72</ymin>
-			<xmax>52</xmax>
-			<ymax>85</ymax>
+			<xmin>137</xmin>
+			<ymin>55</ymin>
+			<xmax>147</xmax>
+			<ymax>74</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>fire_l</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>124</xmin>
+			<ymin>53</ymin>
+			<xmax>139</xmax>
+			<ymax>84</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>fire_l</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>120</xmin>
+			<ymin>11</ymin>
+			<xmax>134</xmax>
+			<ymax>34</ymax>
 		</bndbox>
 	</object>
 </annotation>

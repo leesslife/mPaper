@@ -1,7 +1,7 @@
 <annotation>
 	<folder>fire</folder>
-	<filename>barbecue182.png</filename>
-	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\barbecue182.png</path>
+	<filename>2ndfloorFULLYINVOLVEDHelmetCam2748.png</filename>
+	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\2ndfloorFULLYINVOLVEDHelmetCam2748.png</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -17,70 +17,34 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>98</xmin>
-			<ymin>88</ymin>
-			<xmax>140</xmax>
-			<ymax>188</ymax>
+			<xmin>123</xmin>
+			<ymin>68</ymin>
+			<xmax>136</xmax>
+			<ymax>111</ymax>
 		</bndbox>
 	</object>
 	<object>
-		<name>fire_l</name>
+		<name>fire_h</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>146</xmin>
-			<ymin>34</ymin>
-			<xmax>161</xmax>
-			<ymax>61</ymax>
+			<xmin>29</xmin>
+			<ymin>146</ymin>
+			<xmax>49</xmax>
+			<ymax>195</ymax>
 		</bndbox>
 	</object>
 	<object>
-		<name>fire_l</name>
+		<name>fire_h</name>
 		<pose>Unspecified</pose>
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>172</xmin>
-			<ymin>11</ymin>
-			<xmax>181</xmax>
-			<ymax>19</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>fire_l</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>134</xmin>
-			<ymin>30</ymin>
-			<xmax>142</xmax>
-			<ymax>52</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>fire_l</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>131</xmin>
-			<ymin>76</ymin>
-			<xmax>134</xmax>
-			<ymax>93</ymax>
-		</bndbox>
-	</object>
-	<object>
-		<name>fire_l</name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin>136</xmin>
-			<ymin>121</ymin>
-			<xmax>139</xmax>
-			<ymax>126</ymax>
+			<xmin>53</xmin>
+			<ymin>132</ymin>
+			<xmax>60</xmax>
+			<ymax>181</ymax>
 		</bndbox>
 	</object>
 </annotation>

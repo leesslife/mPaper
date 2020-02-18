@@ -1,14 +1,16 @@
 #import sys
 import os,shutil
-xmlPath2="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\Annotations_bk"
-xmlToPath2="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\Annotations"
-ImagePath2="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\JPEGImages_bk"
-ImageToPath2="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\JPEGImages"
-#xmlPath="C:\\lees_project\\fire-dataset-dunnings\\fire_result_train"
-#xmlToPath="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\Annotations"
-#ImagePath="C:\\lees_project\\fire-dataset-dunnings\\images-224x224\\train\\fire"
-#ImageToPath="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\JPEGImages"
+import xml.etree.ElementTree as ET
+#xmlPath2="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\Annotations_bk"
+#xmlToPath2="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\Annotations"
+#ImagePath2="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\JPEGImages_bk"
+#ImageToPath2="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\JPEGImages"
+xmlPath="C:\\lees_project\\fire-dataset-dunnings\\fire_result_train"
+xmlToPath="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\Annotations"
+ImagePath="C:\\lees_project\\fire-dataset-dunnings\\images-224x224\\train\\fire"
+ImageToPath="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\JPEGImages"
 def MoveVoc(xmlPath1,xmlToPath1,ImagePath1,ImageToPath1):
+
     i=0    
     xmlStr="从"+xmlPath1+"读取xml文件并写入"+xmlToPath1
     print(xmlStr)
@@ -22,10 +24,16 @@ def MoveVoc(xmlPath1,xmlToPath1,ImagePath1,ImageToPath1):
         filename_dir=xmlPath1+'\\'+filename
         Imagename_dir=ImagePath1+'\\'+ImageName
         if ext=="xml":
-            shutil.copy(filename_dir,xmlToPath1+'\\fire'+str(i)+'.xml')
-            shutil.copy(Imagename_dir,ImageToPath1+'\\fire'+str(i)+'.png')
+            tree=ET.parse(filename_dir)
+            root=tree.getroot()
+            obj=root.find("object")
+            if obj is None:
+                print("本图片内没有对象，可以跳过")
+            else:
+                shutil.copy(filename_dir,xmlToPath1+'\\fire'+str(i)+'.xml')
+                shutil.copy(Imagename_dir,ImageToPath1+'\\fire'+str(i)+'.png')
         #print(ImageName)
 
 
 if __name__=='__main__':
-    MoveVoc(xmlPath2,xmlToPath2,ImagePath2,ImageToPath2)
+    MoveVoc(xmlPath,xmlToPath,ImagePath,ImageToPath)

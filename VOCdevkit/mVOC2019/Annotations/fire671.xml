@@ -1,7 +1,7 @@
 <annotation>
 	<folder>fire</folder>
-	<filename>CarOne492.png</filename>
-	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\CarOne492.png</path>
+	<filename>CarOne454.png</filename>
+	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\CarOne454.png</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -17,10 +17,10 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>32</xmin>
-			<ymin>23</ymin>
-			<xmax>126</xmax>
-			<ymax>193</ymax>
+			<xmin>44</xmin>
+			<ymin>17</ymin>
+			<xmax>128</xmax>
+			<ymax>192</ymax>
 		</bndbox>
 	</object>
 </annotation>
