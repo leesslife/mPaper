@@ -187,10 +187,10 @@ void scal_cpu(int N, float ALPHA, float *X, int INCX)
     for(i = 0; i < N; ++i) X[i*INCX] *= ALPHA;
 }
 
-void fill_cpu(int N, float ALPHA, float *X, int INCX)
+void fill_cpu(int N, float ALPHA, float *X, int INCX)  //本函数根据一定的规则填充 *X
 {
     int i;
-    for(i = 0; i < N; ++i) X[i*INCX] = ALPHA;
+    for(i = 0; i < N; ++i) X[i*INCX] = ALPHA;  //INCX为填充间隔，ALPHA为填充数据，N为填充数量
 }
 
 void deinter_cpu(int NX, float *X, int NY, float *Y, int B, float *OUT)

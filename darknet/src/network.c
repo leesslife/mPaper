@@ -194,21 +194,27 @@ network *make_network(int n)
 
 void forward_network(network *netp)
 {
-#ifdef GPU
+#ifdef GPU                          //如果定义了gpu则使用gpu来运算，这里暂时不做解释
     if(netp->gpu_index >= 0){
         forward_network_gpu(netp);   
         return;
     }
 #endif
-    network net = *netp;
-    int i;
-    for(i = 0; i < net.n; ++i){
+    network net = *netp;            //将netp指针指向的结构体 做备份
+    int i;                          //参数i？
+    for(i = 0; i < net.n; ++i){     //net.n？，初步判断为net的层数
         net.index = i;
-        layer l = net.layers[i];
-        if(l.delta){
-            fill_cpu(l.outputs * l.batch, 0, l.delta, 1);
+        layer l = net.layers[i];    //net.layers指向层参数的指针，将net的第i层取出，然后复制给内部layer结构体
+        if(l.delta){                //l.delta?  如果l.delta不是为空或者0则进行以下操作
+            fill_cpu(l.outputs * l.batch, 0, l.delta, 1); 
+            //l.outputs？初步预测是当前层的输出的数据的数量
+            //l.batch 是net的batch，是layer和net的batch的数量是相同的
+            //l.delta是偏移量，比如是卷积神经网络中的偏移量b
+            //最后的参数1代表填充规则
+            //第二个参数0代表填充数据
+            //l.delta是浮点型指针，为偏移量对象，是我们要填充的目标
         }
-        l.forward(l, net);
+        l.forward(l, net);   //根据 当前层l和net中的一些参数，做网络前向运算
         net.input = l.output;
         if(l.truth) {
             net.truth = l.output;
@@ -503,15 +509,15 @@ void top_predictions(network *net, int k, int *index)
 
 float *network_predict(network *net, float *input)
 {
-    network orig = *net;
-    net->input = input;
-    net->truth = 0;
-    net->train = 0;
-    net->delta = 0;
-    forward_network(net);
-    float *out = net->output;
-    *net = orig;
-    return out;
+    network orig = *net;     //将net结构体指针交给 内部orig 结构体(network结构体)，本质上是作为一种备份
+    net->input = input;      //将输入input 赋值给net中的input，input为浮点数指针
+    net->truth = 0;          //net->truth?
+    net->train = 0;          //net->train?
+    net->delta = 0;          //net->delta/
+    forward_network(net);    //对net做前向运算
+    float *out = net->output;  //获取net->output做输出，并将输出赋值给float指针
+    *net = orig;             //将备份的orig 的network结构体赋值给原来的net结构体指针，来作为还原
+    return out;              //将预测数据取出 来还原
 }
 
 int num_detections(network *net, float thresh)
