@@ -1,7 +1,7 @@
 <annotation>
-	<folder>fire</folder>
-	<filename>CarOne117.png</filename>
-	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\CarOne117.png</path>
+	<folder>JPEGImages</folder>
+	<filename>fire377.png</filename>
+	<path>C:\lees_project\mEPaper_project\VOCdevkit\mVOC2019\JPEGImages\fire377.png</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -18,9 +18,33 @@
 		<difficult>0</difficult>
 		<bndbox>
 			<xmin>61</xmin>
-			<ymin>60</ymin>
-			<xmax>141</xmax>
-			<ymax>180</ymax>
+			<ymin>58</ymin>
+			<xmax>104</xmax>
+			<ymax>170</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>fire_h</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>109</xmin>
+			<ymin>82</ymin>
+			<xmax>143</xmax>
+			<ymax>112</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>fire_l</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>86</xmin>
+			<ymin>168</ymin>
+			<xmax>101</xmax>
+			<ymax>181</ymax>
 		</bndbox>
 	</object>
 </annotation>

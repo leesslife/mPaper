@@ -1,7 +1,7 @@
 <annotation>
-	<folder>fire</folder>
-	<filename>barbecue249.png</filename>
-	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\barbecue249.png</path>
+	<folder>JPEGImages</folder>
+	<filename>fire154.png</filename>
+	<path>C:\lees_project\mEPaper_project\VOCdevkit\mVOC2019\JPEGImages\fire154.png</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -21,6 +21,18 @@
 			<ymin>45</ymin>
 			<xmax>127</xmax>
 			<ymax>191</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>fire_l</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>105</xmin>
+			<ymin>214</ymin>
+			<xmax>111</xmax>
+			<ymax>220</ymax>
 		</bndbox>
 	</object>
 </annotation>

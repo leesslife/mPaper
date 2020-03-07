@@ -1,0 +1,26 @@
+<annotation>
+	<folder>fire</folder>
+	<filename>case2_house390.png</filename>
+	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\case2_house390.png</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>224</width>
+		<height>224</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>fire_l</name>
+		<pose>Unspecified</pose>
+		<truncated>1</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>220</xmin>
+			<ymin>62</ymin>
+			<xmax>224</xmax>
+			<ymax>80</ymax>
+		</bndbox>
+	</object>
+</annotation>

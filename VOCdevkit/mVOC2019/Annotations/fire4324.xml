@@ -1,0 +1,26 @@
+<annotation>
+	<folder>fire</folder>
+	<filename>FlashoverDemonstration6547.png</filename>
+	<path>C:\lees_project\fire-dataset-dunnings\images-224x224\train\fire\FlashoverDemonstration6547.png</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>224</width>
+		<height>224</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>fire_h</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>147</xmin>
+			<ymin>66</ymin>
+			<xmax>179</xmax>
+			<ymax>127</ymax>
+		</bndbox>
+	</object>
+</annotation>

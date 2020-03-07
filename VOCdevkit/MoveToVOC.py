@@ -5,10 +5,10 @@ import xml.etree.ElementTree as ET
 #xmlToPath2="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\Annotations"
 #ImagePath2="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\JPEGImages_bk"
 #ImageToPath2="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\JPEGImages"
-xmlPath="C:\\lees_project\\fire-dataset-dunnings\\fire_result_train"
-xmlToPath="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\Annotations"
-ImagePath="C:\\lees_project\\fire-dataset-dunnings\\images-224x224\\train\\fire"
-ImageToPath="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\JPEGImages"
+xmlPath1="C:\\lees_project\\fire-dataset-dunnings\\fire_result_train"
+xmlToPath1="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\Annotations"
+ImagePath1="C:\\lees_project\\fire-dataset-dunnings\\images-224x224\\train\\fire"
+ImageToPath1="C:\\lees_project\\mEPaper_project\\VOCdevkit\\mVOC2019\\JPEGImages"
 def MoveVoc(xmlPath1,xmlToPath1,ImagePath1,ImageToPath1):
 
     i=0    
@@ -36,4 +36,4 @@ def MoveVoc(xmlPath1,xmlToPath1,ImagePath1,ImageToPath1):
 
 
 if __name__=='__main__':
-    MoveVoc(xmlPath,xmlToPath,ImagePath,ImageToPath)
+    MoveVoc(xmlPath1,xmlToPath1,ImagePath1,ImageToPath1)
